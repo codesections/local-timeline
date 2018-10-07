@@ -55,8 +55,6 @@ p {
   margin: auto;
   margin-top: .5em;
   font-size: 1.25em;
-}
-.button--good {
   background-color: #2b90d9; /* Blue, matching Mastodon "Toot!" button */
 }
 .button--show-more {

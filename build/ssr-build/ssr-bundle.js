@@ -528,10 +528,10 @@ var index_App = function (_Component) {
   }
 
   App.prototype.componentDidMount = function componentDidMount() {
-    this.getLocalTimeline();
+    this.getLocalTL();
   };
 
-  App.prototype.getLocalTimeline = function getLocalTimeline() {
+  App.prototype.getLocalTL = function getLocalTL() {
     var xhr = new XMLHttpRequest();
     var url = 'https://fosstodon.org/api/v1/timelines/public?local=true';
     if (this.state.idOfLastLoadedToot) {
@@ -555,9 +555,11 @@ var index_App = function (_Component) {
           }, {});
           response.push(filtered);
         });
-        context.setState({ messages: context.state.messages.concat(response) });
-        context.setState({ idOfLastLoadedToot: fullResponse[fullResponse.length - 1].id });
-        context.setState({ loaded: true });
+        context.setState({
+          messages: context.state.messages.concat(response),
+          idOfLastLoadedToot: fullResponse[fullResponse.length - 1].id,
+          loaded: true
+        });
       }
     };
     xhr.send();
@@ -579,13 +581,9 @@ var index_App = function (_Component) {
       ),
       Object(preact_min["h"])(
         'button',
-        {
-          type: 'button',
-          onClick: function onClick() {
-            return _this2.getLocalTimeline.call(_this2);
-          },
-          className: 'button button--good'
-        },
+        { type: 'button', onClick: function onClick() {
+            return _this2.getLocalTL.call(_this2);
+          }, className: 'button' },
         'Load More'
       )
     );
@@ -593,81 +591,6 @@ var index_App = function (_Component) {
 
   return App;
 }(preact_min["Component"]);
-/*
-
-
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width">
-    <meta property="og:title" content="Mastodon De-Mob"> 
-    <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="Mastodon De-Mob">
-    <meta name="twitter:image:src" content="https://www.codesections.com/codesections_logo.png"> 
-    <meta property="og:type" content="article">
-    <meta property="og:url" content="www.codesections.com">
-    <meta property="og:site_name" content="CodeSections">
-    <meta property="article:section" content="Article Section">
-    <meta property="og:image" itemprop="image primaryImageOfPage" content="https://www.codesections.com/codesections_logo_large.png"><meta name="og:description" content="A tool to allow Mastodon users to better protect themselves from harassment">
-    <meta name="description" content="A tool to allow Mastodon users to better protect themselves from harassment">
-    <meta name="twitter:description" content="A tool to allow Mastodon users to better protect themselves from harassment">
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-    <link rel="manifest" href="/manifest.json">
-    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
-    <meta name="theme-color" content="#d9d9d9">
-    <link rel="canonical" href="https://mastodon-de-mob.codesections.com">
-    <title>
-Fosstodon local timeline
-    </title>
-  <body lang="en" class="body__defaults">
-    <h1 class="header--main" id="add-an-instance-h1">
-      Fosstodon local timeline
-    </h1>
-    <noscript>
-      <div class="alert alert__warning">
-        <strong class="header--alert">JavaScript Required</strong>
-        <p class="paragraph--alert">Ok, yes, I know you probably have 
-        JavaScript disabled for good reasons—I also value my privacy and
-        don't like the bloat of the modern web.  But look, this app is
-        neither bloated nor spying on you.  If you don't believe me, check
-        out the <a class="link" href="https://github.com/codesections/mastodon-de-mob">source</a>. 
-        In fact, just read the source for this page—I didn't even minify 
-        anything or take out the comments.  You can see for yourself that
-        there aren't any trackers; just simple http requests to your mastodon
-        instance.  This is one to add to your whitelist.
-        </p>
-      </div>
-    </noscript>
-
-    <div class="content__login">
-    </div>
-    
-    
-      <div class="alert alert__error error--toot-not-found">
-        <strong>Error</strong>: Could not find toot.  Please check the URL and try again.
-      </div>
-
-    <div class="alert alert__error error--unknown">
-        <strong class="header--alert">Sever error</strong>
-        <p>
-          Something went wrong.  Sorry about that!
-        </p>
-    </div> 
-    
-    <div class="content__results">
-      <h2 class="header--secondary">
-      </h2>
-      <div class="results--target-toot">
-      </div>
-      <button class="button button--good button--block-all">Next</button>
-    </div>
-    <script src="main.js"></script>
-  </body>
-</html>
-*/
-
 
 
 
