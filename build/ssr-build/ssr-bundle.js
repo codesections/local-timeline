@@ -340,11 +340,7 @@ var tootHeader_tootHeader = function tootHeader(props) {
     "div",
     { className: "card--toot-header" },
     Object(preact_min["h"])("img", { className: "toot-header__img", src: avatar_static, alt: "Profile" }),
-    Object(preact_min["h"])(
-      "strong",
-      null,
-      display_name || acct
-    ),
+    Object(preact_min["h"])("strong", { dangerouslySetInnerHTML: { __html: display_name ? display_name : acct } }),
     tootHeader__ref,
     Object(preact_min["h"])(
       "span",
@@ -563,16 +559,9 @@ var index_App = function (_Component) {
     xhr.onreadystatechange = function () {
       if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
         var fullResponse = JSON.parse(xhr.responseText);
-        var propertiesToKeep = ['account', 'content', 'created_at', 'favourites_count', 'reblogs_count', 'replies_count', 'media_attachments', 'spoiler_text'];
-        var response = [];
-        fullResponse.forEach(function (responseObj) {
-          var filtered = Object.keys(responseObj).filter(function (key) {
-            return propertiesToKeep.includes(key);
-          }).reduce(function (obj, key) {
-            obj[key] = responseObj[key];
-            return obj;
-          }, {});
-          response.push(filtered);
+        var response = filterResponse(fullResponse);
+        response.forEach(function (toot, i) {
+          response[i] = insertCustomEmoji(toot);
         });
         context.setState({
           messages: context.state.messages.concat(response),
@@ -582,6 +571,38 @@ var index_App = function (_Component) {
       }
     };
     xhr.send();
+
+    var filterResponse = function filterResponse(unfilteredResponse) {
+      var propertiesToKeep = ['account', 'content', 'created_at', 'favourites_count', 'reblogs_count', 'replies_count', 'media_attachments', 'spoiler_text', 'emojis'];
+      var response = [];
+      unfilteredResponse.forEach(function (responseObj) {
+        var filtered = Object.keys(responseObj).filter(function (key) {
+          return propertiesToKeep.includes(key);
+        }).reduce(function (obj, key) {
+          obj[key] = responseObj[key];
+          return obj;
+        }, {});
+        response.push(filtered);
+      });
+      return response;
+    };
+
+    var insertCustomEmoji = function insertCustomEmoji(response) {
+      // add emoji in display name
+      response.account.emojis.forEach(function (emojiObj) {
+        var displayName = response.account.display_name;
+        var customEmoji = new RegExp(':' + emojiObj.shortcode + ':', 'g');
+        response.account.display_name = displayName.replace(customEmoji, '<img class="custom-emoji" src="' + emojiObj.static_url + '" alt=":' + emojiObj.shortcode + '">');
+      });
+      if (response.emojis) {
+
+        response.emojis.forEach(function (emojiObj) {
+          var customEmoji = new RegExp(':' + emojiObj.shortcode + ':', 'g');
+          response.content = response.content.replace(customEmoji, '<img class="custom-emoji" src="' + emojiObj.static_url + '" alt=":' + emojiObj.shortcode + '">');
+        });
+      }
+      return response;
+    };
   };
 
   App.prototype.render = function render() {

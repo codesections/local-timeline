@@ -29,24 +29,9 @@ export default class App extends Component {
         && xhr.status === 200
       ) {
         const fullResponse = JSON.parse(xhr.responseText);
-        const propertiesToKeep = [
-          'account',
-          'content',
-          'created_at',
-          'favourites_count',
-          'reblogs_count',
-          'replies_count',
-          'media_attachments',
-          'spoiler_text',
-        ];
-        const response = [];
-        fullResponse.forEach((responseObj) => {
-          const filtered = Object.keys(responseObj).filter(key => propertiesToKeep.includes(key))
-            .reduce((obj, key) => {
-              obj[key] = responseObj[key];
-              return obj;
-            }, {});
-          response.push(filtered);
+        const response = filterResponse(fullResponse);
+        response.forEach((toot, i) => {
+          response[i] = insertCustomEmoji(toot);
         });
         context.setState({
           messages: context.state.messages.concat(response),
@@ -56,7 +41,55 @@ export default class App extends Component {
       }
     };
     xhr.send();
+
+    const filterResponse = function (unfilteredResponse) {
+      const propertiesToKeep = [
+        'account',
+        'content',
+        'created_at',
+        'favourites_count',
+        'reblogs_count',
+        'replies_count',
+        'media_attachments',
+        'spoiler_text',
+        'emojis',
+      ];
+      const response = [];
+      unfilteredResponse.forEach((responseObj) => {
+        const filtered = Object.keys(responseObj).filter(key => propertiesToKeep.includes(key))
+          .reduce((obj, key) => {
+            obj[key] = responseObj[key];
+            return obj;
+          }, {});
+        response.push(filtered);
+      });
+      return response;
+    };
+
+    const insertCustomEmoji = function (response) {
+      // add emoji in display name
+      response.account.emojis.forEach((emojiObj) => {
+        const displayName = response.account.display_name;
+        const customEmoji = new RegExp(`:${emojiObj.shortcode}:`, 'g');
+        response.account.display_name = displayName.replace(
+          customEmoji,
+          `<img class="custom-emoji" src="${emojiObj.static_url}" alt=":${emojiObj.shortcode}">`,
+        );
+      });
+      if (response.emojis) {
+
+        response.emojis.forEach((emojiObj) => {
+          const customEmoji = new RegExp(`:${emojiObj.shortcode}:`, 'g');
+          response.content = response.content.replace(
+            customEmoji,
+            `<img class="custom-emoji" src="${emojiObj.static_url}" alt=":${emojiObj.shortcode}">`,
+          );
+        });
+      }
+      return response;
+    };
   }
+
 
   render() {
     return (

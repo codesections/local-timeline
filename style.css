@@ -175,3 +175,7 @@ p {
 .svg-inline--fa {
   padding-right: .5em;
 }
+
+.custom-emoji {
+  width: 1em;
+}
